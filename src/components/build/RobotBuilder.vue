@@ -1,5 +1,5 @@
 <template>
-    <div class="robot-builder-wrapper">
+    <div v-if="availableParts" class="robot-builder-wrapper">
         
             <div class="preview">                
             <CollapsibleContent>
@@ -40,23 +40,12 @@
         <div class="bottom-row">
             <PartSelector :parts="availableParts.bases" position="bottom" @partSelected="part => selectedRobot.base=part" />
         </div>
-        <!-- <div class="cart">
-            <div class="cart__heading">
-                <div class="cart__heading--item">Robot Name</div>
-                <div class="cart__heading--item">Cost</div>
-            </div>
-            <div v-for="(robot, index) in cart" :key=index class="cart__body">
-                <div class="cart__body--item">{{cart[index].name}}</div>
-                <div class="cart__body--item">{{cart[index].totalCost}}</div>
-            </div>
-            
 
-        </div> -->
     </div>
 </template>
 
 <script>
-import availableParts from '../../data/parts';
+// import availableParts from '../../data/parts';
 import PartSelector from './PartSelector';
 import CollapsibleContent from '../../shared/CollapsibleContent'
 
@@ -65,8 +54,8 @@ export default {
     components: {PartSelector, CollapsibleContent},
     data() {
         return {
-            availableParts,
-            cart : [],
+            // availableParts,
+            // cart : [],
             selectedRobot: {
                 head: {},
                 leftArm: {},
@@ -76,9 +65,15 @@ export default {
             },                
         }
     },
+    created() {
+        this.$store.dispatch('robots/getParts')
+    },
     computed: {
         saleHighlight() {
             return this.selectedRobot.head.onSale ? 'saleHighlight' : '';
+        },
+        availableParts() {
+            return this.$store.state.robots.parts
         }
     },
     methods: {
@@ -86,10 +81,11 @@ export default {
             const robot = this.selectedRobot;
             const name = robot.head.title;
             const totalCost = robot.head.cost + robot.leftArm.cost + robot.torso.cost + robot.rightArm.cost + robot.base.cost;
-            const onSale = robot.head.onSale
+            const onSale = robot.head.onSale || robot.leftArm.onSale || robot.torso.onSale || robot.rightArm.onSale || robot.base.onSale
             const robotObj = {name, totalCost, onSale};
-            this.$store.commit('addRobotToCart', robotObj)
-            this.cart.push(robotObj);
+            this.$store.dispatch('robots/addRobotToCart', robotObj).then(
+                () => this.$router.push({name: 'Cart'})
+            )
         },
     },
     

@@ -3,11 +3,12 @@
     <img @click="showPartInfo()" :src="selectedPart.src" title="arm"/>
     <button @click="selectPreviousPart()" class="prev-selector"></button>
     <button @click="selectNextPart()" class="next-selector"></button>
-    <span class="sale" v-show="selectedPart.onSale">Sale!</span>
+    <span v-pin="{ left: '10px', bottom: '10px' }" class="sale" v-show="selectedPart.onSale">Sale!</span>
   </div>
 </template>
 
 <script>
+import pinDirective from '../../shared/pin-directive'
 
 function getPreviousValidIndex(index, length) {
   const deprecatedIndex = index - 1;
@@ -20,42 +21,44 @@ function getNextValidIndex(index, length) {
 }
 
 export default {
-    props: ['parts', 'position'],
-    data() {
-        return { selectedPartIndex: 0 };
+  directives: {
+    pin: pinDirective
+  },
+  props: ['parts', 'position'],
+  data() {
+    return { selectedPartIndex: 0 };
+  },
+  created() {
+    this.emitSelectedPart();
+  },
+  updated() {
+    this.emitSelectedPart();
+  },
+  computed: {
+    selectedPart() {
+      return this.parts[this.selectedPartIndex];
     },
-    created() {
-        this.emitSelectedPart();
+  },
+  methods: {
+    showPartInfo() {
+      this.$router.push({
+        'name': 'Parts',
+        params: {
+          partType: this.selectedPart.type,
+          id: this.selectedPart.id
+        }
+      });
     },
-    updated() {
-        this.emitSelectedPart();
+    emitSelectedPart() {
+      this.$emit('partSelected', this.selectedPart)
     },
-    computed: {
-        selectedPart() {
-        return this.parts[this.selectedPartIndex];
-        },
-    },
-    methods: {
-      showPartInfo() {
-        this.$router.push({
-          'name': 'Parts',
-          params: {
-            partType: this.selectedPart.type,
-            id: this.selectedPart.id
-            }
-          });
-          window.console.log(this.$route.params)
-      },
-      emitSelectedPart() {
-          this.$emit('partSelected', this.selectedPart)
-      },
-      selectNextPart() {
+    selectNextPart() {
       this.selectedPartIndex = getNextValidIndex(this.selectedPartIndex, this.parts.length);
-      },
-      selectPreviousPart() {
-          this.selectedPartIndex = getPreviousValidIndex(this.selectedPartIndex, this.parts.length);
-      },
     },
+    selectPreviousPart() {
+      this.selectedPartIndex = getPreviousValidIndex(this.selectedPartIndex, this.parts.length);
+    },
+  },
 };
 
 </script>
@@ -69,9 +72,6 @@ export default {
   cursor: pointer;
 }
 .sale {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
   color: white;
   background-color: red;
   padding: 3px;

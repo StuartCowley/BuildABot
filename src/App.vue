@@ -9,8 +9,11 @@
           <router-link class="nav-item__link" :to="{name: 'Build'}" > Build </router-link>
         </li>
         <li class="nav-item">
+          <router-link class="nav-item__link" :to="{name: 'BrowseParts'}" > Browse parts </router-link>
+        </li>
+        <li v-if="cart.length" class="nav-item">
           <router-link class="nav-item__cart" to="/cart" exact> Cart </router-link>
-          <div v-if="cart.length" class="nav-item__counter">
+          <div class="nav-item__counter">
             {{ cart.length }}
           </div>
         </li>
@@ -33,7 +36,7 @@ export default {
   name: 'app',
   computed: {
     cart() {
-      return this.$store.state.cart;
+      return this.$store.state.robots.cart;
     }
   }
 }

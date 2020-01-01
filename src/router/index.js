@@ -50,7 +50,7 @@ export default new Router({
             },
             {
                 name: 'BrowseTorsos',
-                path: 'Torsos',
+                path: 'torsos',
                 component: RobotTorsos
             },
             {
