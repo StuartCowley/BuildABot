@@ -18,7 +18,7 @@
             {{robot.name}}
           </td>
           <td class="cost">
-            {{robot.totalCost}}
+            {{robot.totalCost | currency('£')}}
           </td>
         </tr>
       </tbody>
@@ -41,7 +41,7 @@
             {{robot.name}}
           </td>
           <td class="cost">
-            {{robot.totalCost}}
+            {{robot.totalCost | currency('£') }}
           </td>
         </tr>
       </tbody>
@@ -59,7 +59,7 @@ export default {
         cartSaleItems() {
             return this.$store.getters['robots/cartSaleItems']
         }
-    }
+    },
 };
 </script>
 
